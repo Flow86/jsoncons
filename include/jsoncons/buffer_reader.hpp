@@ -40,7 +40,7 @@ namespace jsoncons {
     public:
 
         buffer_reader(std::size_t buffer_length, const Allocator& alloc = Allocator())
-            : buffer_(buffer_length, CharT(), alloc), data_(nullptr), length_(0), bof_(true), eof_(false)
+            : buffer_(round_up(buffer_length), CharT(), alloc), data_(nullptr), length_(0), bof_(true), eof_(false)
         {
         }
 
@@ -56,7 +56,7 @@ namespace jsoncons {
 
         void buffer_length(std::size_t length)
         {
-            buffer_.resize(length);
+            buffer_.resize(round_up(length));
         }
 
         const char_type* data() const {return data_;}
@@ -95,6 +95,12 @@ namespace jsoncons {
                 }
             }
         }
+    private:
+        static std::size_t round_up(std::size_t length)
+        {
+            // size must be >= 4 and divisible by 4
+            return length - 1 - (length - 1) % 4 + 4;
+        }
     };
 
     // json_buffer_reader
@@ -116,7 +122,7 @@ namespace jsoncons {
     public:
 
         json_buffer_reader(std::size_t buffer_length, const Allocator& alloc)
-            : buffer_(buffer_length, CharT(), alloc), data_(nullptr), length_(0), bof_(true), eof_(false)
+            : buffer_(round_up(buffer_length), CharT(), alloc), data_(nullptr), length_(0), bof_(true), eof_(false)
         {
         }
 
@@ -132,7 +138,7 @@ namespace jsoncons {
 
         void buffer_length(std::size_t length)
         {
-            buffer_.resize(length);
+            buffer_.resize(round_up(length));
         }
 
         const char_type* data() const {return data_;}
@@ -170,6 +176,12 @@ namespace jsoncons {
                     }
                 }
             }
+        }
+    private:
+        std::size_t round_up(std::size_t length)
+        {
+            // size must be >= 4 and divisible by 4
+            return length - 1 - (length - 1) % 4 + 4;
         }
     };
 
